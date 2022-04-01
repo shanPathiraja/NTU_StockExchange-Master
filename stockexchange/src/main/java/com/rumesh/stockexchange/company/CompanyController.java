@@ -48,10 +48,13 @@ public class CompanyController {
     return companyService.findBySymbol(symbol);
     }
     //method to update share prices from alpha vantage
-    @GetMapping("/update-share-price")
-    public ResponseEntity<HttpStatus> updateSharePrice() throws Exception {
-        return companyService.updateSharePrice();
+    @GetMapping("/get-price")
+    public ResponseEntity<HttpStatus> updatePrice() {
+        return companyService.getPrice();
 
     }
-
+    @GetMapping("/get-rates")
+    public ResponseEntity<HttpStatus> updateRates() {
+        return companyService.getRates();
+    }
 }

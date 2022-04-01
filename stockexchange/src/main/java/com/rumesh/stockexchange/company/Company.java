@@ -17,11 +17,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Company implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
-    @Column(name = "symbol", unique = true, nullable = false, columnDefinition = "varchar(50) UNIQUE")
+    @Column(name = "symbol", unique = true, nullable = false)
     private String symbol;
 
     @Column(name = "name", nullable = false, columnDefinition = "TEXT")
@@ -30,16 +30,13 @@ public class Company implements Serializable {
     @Column(name = "price", nullable = false, columnDefinition = "double")
     private Float price;
 
-    @Column(name = "total_shares", nullable = false, columnDefinition = "integer")
-    private Float totalShares;
+    @Column(name = "available_shares", nullable = false, columnDefinition = "integer")
+    private Float availShares;
     
     @Column(name= "currency", nullable = false)
     private String currency;
     
     @Column(name="last_updated")
     private String lastUpdated;
-
-//   @Column(name = "url")
-//    private String url;
 
 }

@@ -24,7 +24,7 @@ public class TradeService {
             Optional<Company> companyOptional = companyRepo.findCompanyBySymbol(item.getCompanySymbol());
             if (companyOptional.isPresent()) {
                 Company company = companyOptional.get();
-                Float currentShares = company.getTotalShares();
+                Float currentShares = company.getAvailShares();
 
                 if ("BUY".equals(item.getType())) {
                     currentShares = currentShares - item.getNumShares();
@@ -35,7 +35,7 @@ public class TradeService {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
 
-               company.setTotalShares(currentShares);
+               company.setAvailShares(currentShares);
                 companyRepo.save(company);
                 printTest(company);
                 return new ResponseEntity<>(HttpStatus.OK);
