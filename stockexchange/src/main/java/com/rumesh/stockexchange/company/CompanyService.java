@@ -9,8 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 
 import java.net.URL;
@@ -21,6 +20,8 @@ import java.util.Optional;
 
 @Service
 public class CompanyService {
+
+    PrintWriter writerObj1 =null;
 
     @Autowired
     private final CompanyRepo companyRepo;
@@ -78,19 +79,15 @@ public class CompanyService {
 //                        .thenApply(updateSharePrice()::parse)
 //                        .join();
 //            }
-//            public static String parse(String responseBody) {
-//                JSONArray quotes = new JSONArray(responseBody);
-//             //   JSONObject quote = quotes.getJSONObject()
-//                float quote
+//
 //            }
 //        }
 // }
 
-    //    private String quoteURL(String companySymbol) {
-//        return "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + companySymbol +
-//                "&interval=15min&apikey=TDPJMOR8QZZJBTAY";
-//    }
+   // String data = String.valueOf(alphaVantage.get("sharePrice"));
+
     public void updateSharePriceEvent() {
+
         List<Company> companies = new ArrayList<>(companyRepo.findAll());
         for (Company company : companies) {
             String companySymbol = company.getSymbol();
@@ -99,17 +96,53 @@ public class CompanyService {
                     String urlString = quoteURL(companySymbol);
                     String results = httpRequest(urlString);
 
-                    JSONObject sharePriceData = getSharePriceData(results);
-                    company.setPrice(Float.parseFloat(String.valueOf(sharePriceData.get("sharePrice"))));
-                    company.setLastUpdated(String.valueOf(sharePriceData.get("date")));
+                    JSONObject alphaVantage = getAlphavantageData(results);
+                    company.setPrice(Float.parseFloat(String.valueOf(alphaVantage.get("sharePrice"))));
+                    company.setLastUpdated(String.valueOf(alphaVantage.get("date")));
+
+                    //write to text file
+                    String price = String.valueOf(alphaVantage.get("sharePrice"));
+                    String date = String.valueOf(alphaVantage.get("date"));
+                  //  printTest(price, date);
                 } catch (Exception err) {
                     System.out.println("Exception" + err);
                 }
             }
             companyRepo.saveAll(companies);
+            printTest(companies);
         }
 
     }
+
+    private void printTest(List<Company> companies) {
+        try {
+            PrintWriter output = new PrintWriter("D:\\Projects\\output.txt");
+
+            //output.printf("{"+"price:"+ price +"," + "date:"+ date +"}");
+            output.printf(String.valueOf(companies));
+
+            output.close();
+        }
+        catch(Exception e) {
+            e.getStackTrace();
+        }
+    }
+
+/*    private void printTest(String price, String date) {
+        try {
+            PrintWriter output = new PrintWriter("D:\\Projects\\output.txt");
+
+            output.printf("{"+"price:"+ price +"," + "date:"+ date +"}");
+            //output.printf(date);
+
+            output.close();
+        }
+        catch(Exception e) {
+            e.getStackTrace();
+        }
+    }
+
+ */
 
     private String httpRequest(String urlString) throws Exception {
         URL url = new URL(urlString);
@@ -133,18 +166,21 @@ public class CompanyService {
 
     private String quoteURL (String companySymbol){
         return "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + companySymbol +
-                "&interval=5min&apikey=TDPJMOR8QZZJBTAY";
+                "&interval=5min&apikey=NRY4DZTJINT3LLUL"; //TDPJMOR8QZZJBTAY
     }
 
-    private JSONObject getSharePriceData(String response) throws ParseException {
+    private JSONObject getAlphavantageData(String response) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(response);
         String date = (String) ((JSONObject) json.get("Meta Data")).get("3. Last Refreshed");
+        String price = (String) ((JSONObject) json.get("Time Series (5min)")).get("4. close");
         JSONObject sharePrice = (JSONObject) ((JSONObject) json.get("Time Series (5min)")).get(date);
-
+    System.out.println(price);
         JSONObject data = new JSONObject();
+
         data.put("date", date);
-        data.put("sharePrice", sharePrice.get("1. open"));
+        data.put("sharePrice", sharePrice.get("4. close"));
         return data;
+
     }
 }

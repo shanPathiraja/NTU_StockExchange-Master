@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+
+import java.io.PrintWriter;
 import java.util.Optional;
 
 
@@ -35,12 +37,27 @@ public class TradeService {
 
                company.setTotalShares(currentShares);
                 companyRepo.save(company);
+                printTest(company);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void printTest(Company company) {
+        try {
+
+            PrintWriter output = new PrintWriter("D:\\Projects\\output.txt");
+
+            output.append(String.valueOf(company));
+
+            output.close();
+        }
+        catch(Exception e) {
+            e.getStackTrace();
         }
     }
 }

@@ -21,7 +21,7 @@ public class Company implements Serializable {
     @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
-    @Column(name = "code", unique = true, nullable = false, columnDefinition = "varchar(50) UNIQUE")
+    @Column(name = "symbol", unique = true, nullable = false, columnDefinition = "varchar(50) UNIQUE")
     private String symbol;
 
     @Column(name = "name", nullable = false, columnDefinition = "TEXT")
@@ -39,7 +39,7 @@ public class Company implements Serializable {
     @Column(name="last_updated")
     private String lastUpdated;
 
-   @Column(name = "url")
-    private String url;
+//   @Column(name = "url")
+//    private String url;
 
 }
